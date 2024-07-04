@@ -4,8 +4,6 @@ import br.com.samueljunnior.module.user.enums.UserTypeEnum;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.math.BigDecimal;
-
 @Entity
 @Table(name = "tb_usuario")
 @Getter
@@ -34,26 +32,11 @@ public class UserEntity {
     @Column(name = "des_senha")
     private String password;
 
-    @Column(name = "num_saldo")
-    private BigDecimal balance;
-
     @ManyToOne
     @JoinColumn(name = UserTypeEntity.ID_USER_TYPE)
     private UserTypeEntity type;
 
     public boolean isMerchant() {
         return this.type.getId().intValue() == UserTypeEnum.MERCHANT.getId();
-    }
-
-    public boolean hasBalance(BigDecimal value) {
-        return  this.balance.compareTo(value) >= 0;
-    }
-
-    public void debit(BigDecimal value) {
-       this.balance = this.balance.subtract(value);
-    }
-
-    public void credit(BigDecimal value){
-        this.balance = this.balance.add(value);
     }
 }

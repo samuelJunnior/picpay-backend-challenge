@@ -1,11 +1,9 @@
 package br.com.samueljunnior.module.user.service;
 
 import br.com.samueljunnior.core.exceptions.BusinessException;
-import br.com.samueljunnior.core.exceptions.NotFoundException;
 import br.com.samueljunnior.module.user.dto.UserCreateDTO;
 import br.com.samueljunnior.module.user.dto.UserDTO;
 import br.com.samueljunnior.module.user.dto.UserFilterDTO;
-import br.com.samueljunnior.module.user.entity.UserEntity;
 import br.com.samueljunnior.module.user.entity.UserTypeEntity;
 import br.com.samueljunnior.module.user.mapper.UserCreateMaper;
 import br.com.samueljunnior.module.user.mapper.UserFilterMaper;
@@ -15,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.Example;
 import org.springframework.data.domain.ExampleMatcher;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -55,11 +54,6 @@ public class UserService {
 
         final var ex = Example.of(entity, exm);
 
-        return userMaper.toDto(userRepository.findAll(ex));
-    }
-
-    public UserEntity findUserById(Long id){
-        return userRepository.findById(id)
-                .orElseThrow(NotFoundException::new);
+        return userMaper.toDto(userRepository.findAll(ex, Sort.by(Sort.Direction.ASC, "id")));
     }
 }

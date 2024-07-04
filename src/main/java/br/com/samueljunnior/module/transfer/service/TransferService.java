@@ -7,8 +7,8 @@ import br.com.samueljunnior.module.transfer.dto.TransferDTO;
 import br.com.samueljunnior.module.transfer.entity.TransferEntity;
 import br.com.samueljunnior.module.transfer.mapper.TransferMapper;
 import br.com.samueljunnior.module.transfer.repository.TransferRepository;
-import br.com.samueljunnior.module.user.entity.UserEntity;
-import br.com.samueljunnior.module.user.service.UserService;
+import br.com.samueljunnior.module.wallet.entity.WalletEntity;
+import br.com.samueljunnior.module.wallet.service.WalletService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,25 +22,25 @@ import java.util.concurrent.CompletableFuture;
 public class TransferService {
 
     private final TransferRepository transferRepository;
-    private final UserService userService;
+    private final WalletService walletService;
     private final IntegrationsService integrationsService;
     private final TransferMapper transferMapper;
 
     @Transactional
     public TransferDTO transfer(CreateTransferDTO transfer){
-        final var sender = userService.findUserById(transfer.payer());
-        final var receiver = userService.findUserById(transfer.payee());
+        final var walletSender = walletService.getWalletByUser(transfer.payer());
+        final var walletReceiver =walletService.getWalletByUser(transfer.payee());
 
         final var value = new BigDecimal(transfer.value());
-        this.validTransfer(sender, value);
+        this.validTransfer(walletSender, value);
 
-        sender.debit(value);
-        receiver.credit(value);
+        walletService.debitValue(walletSender.getId(), value);
+        walletService.creditValue(walletReceiver.getId(), value);
 
         final var entity = transferRepository.save(
                 TransferEntity.builder()
-                        .sender(sender)
-                        .receiver(receiver)
+                        .sender(walletSender.getUser())
+                        .receiver(walletReceiver.getUser())
                         .transferDate(LocalDateTime.now())
                         .value(value)
                         .build()
@@ -51,12 +51,12 @@ public class TransferService {
         return transferMapper.toDto(entity);
     }
 
-    private void validTransfer(UserEntity sender, BigDecimal value) {
-        if(sender.isMerchant()){
+    private void validTransfer(WalletEntity walletSender, BigDecimal value) {
+        if(walletSender.getUser().isMerchant()){
             throw new BusinessException("Transfer no allowed to merchant user.");
         }
 
-        if(!sender.hasBalance(value)){
+        if(!walletSender.hasBalance(value)){
             throw new BusinessException("Insufficient balance");
         }
 

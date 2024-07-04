@@ -28,11 +28,11 @@ public class TransferEntity {
     @Column(name = "dt_tranferencia")
     private LocalDateTime transferDate;
 
-    @ManyToOne(cascade = CascadeType.MERGE)
+    @ManyToOne
     @JoinColumn(name = "id_usuario_pagador")
     private UserEntity sender;
 
-    @ManyToOne(cascade = CascadeType.MERGE)
+    @ManyToOne
     @JoinColumn(name = "id_usuario_recebedor")
     private UserEntity receiver;
 }
