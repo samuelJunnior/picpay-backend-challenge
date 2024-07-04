@@ -1,4 +1,4 @@
-# User CRUD - API
+# API PicPay Simplificado
 
 >Uma API REST em Spring Boot que implementa o desafio backend do PicPay.
 > 
@@ -27,6 +27,7 @@
 * Spring Boot
 * Spring Data JPA
 * Versionamento e hospedágem de código com `Git` / [`Github`](https://github.com/samuelJunnior/picpay-backend-challenge)
+* Versionamento do banco com `Liquibase`.
 * Fluxo de trabalho com `GitFlow`.
 * Banco de dados relacional `Postgres`.
 * Integrações com APIs externas com `Spring Cloud OpenFeing`.
